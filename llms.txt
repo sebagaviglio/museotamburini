@@ -1,0 +1,21 @@
+# Museo Arq. Francisco Tamburini
+
+> Museo ubicado en la histórica casa matriz del Banco de Córdoba (Bancor), San Jerónimo 166, Córdoba, Argentina. El edificio, obra del arquitecto italiano Francisco Tamburini, fue inaugurado el 17 de mayo de 1889 y conserva un vitreaux en el techo del hall central y yesería de Arturo Nembrini Gonzaga.
+
+- Horario: Lunes a viernes de 9 a 16 h
+- Teléfono: +54 351 420-7207
+- Entradas y reservas: https://bezzapass.com.ar/
+
+## Muestras en cartel
+- [19° Premio de Pintura Bancor](https://www.bancor.com.ar/museo-tamburini/muestras/19-premio-pintura-bancor-2026/index.md): Convocatoria abierta en las categorías Pintura y Muralismo. (18 ago 2026 — 15 dic 2026)
+- [Cielo artístico: el vitreaux de cerca](https://www.bancor.com.ar/museo-tamburini/muestras/cielo-artistico-el-vitreaux-de-cerca/index.md): Un recorrido por el hall central de la casa matriz: el vitreaux, la yesería y los símbolos de 1889. (1 ene 2026 — 31 dic 2026)
+- [Muestra temporal en cartel](https://www.bancor.com.ar/museo-tamburini/muestras/muestra-temporal-2026/index.md): Espacio para la muestra activa: obra, artista, curaduría y video de presentación. (1 sep 2026 — 30 nov 2026)
+
+## Archivo
+- [Los dorados años veinte · Noche de los Museos 2025](https://www.bancor.com.ar/museo-tamburini/muestras/noche-de-los-museos-2025-los-dorados-anos-veinte/index.md): Una noche que recreó el espíritu de los años veinte, cuando el Banco transitaba su cincuentenario. (7 nov 2025)
+- [18° Premio de Pintura Bancor](https://www.bancor.com.ar/museo-tamburini/muestras/18-premio-pintura-bancor-2025/index.md): Obras ganadoras y seleccionadas de la edición 18. (1 ago 2025 — 15 dic 2025)
+- [Muestra histórica 2024](https://www.bancor.com.ar/museo-tamburini/muestras/muestra-historica-2024/index.md): Registro de ejemplo para el archivo. (1 may 2024 — 30 jul 2024)
+
+## Optional
+- [Listado de muestras](https://www.bancor.com.ar/museo-tamburini/muestras/)
+- [Datos estructurados](https://www.bancor.com.ar/museo-tamburini/data/muestras.json)
