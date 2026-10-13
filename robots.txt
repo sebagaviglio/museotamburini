@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 
-# Asistentes de IA bienvenidos
 User-agent: GPTBot
 Allow: /
 User-agent: ClaudeBot

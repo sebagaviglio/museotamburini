@@ -2,7 +2,7 @@
 
 > Convocatoria abierta en las categorías Pintura y Muralismo.
 
-- Tipo: Premio
+- Tipo: Muestra
 - Fechas: 18 ago 2026 — 15 dic 2026 (2026-08-18 a 2026-12-15)
 - Estado: En cartel
 - Entrada: Inscripción online
