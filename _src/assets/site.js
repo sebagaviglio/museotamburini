@@ -1,8 +1,8 @@
-/* Museo Tamburini · site.js v4 */
+/* Museo Tamburini · site.js v5 */
 (function(){
 const S=window.SITE,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const D=S.data,CFG=D.config,M=D.muestras;
-const img=u=>u==='__VITREAUX__'?S.vit:u;
+const img=u=>!u?'':u==='__VITREAUX__'?S.vit:(S.imgs&&S.imgs[u])?S.imgs[u]:u.startsWith('assets/')?S.root+u:u;
 const href=slug=>S.preview?'#/muestras/'+slug+'/':S.root+'muestras/'+slug+'/';
 const HOY=new Date();HOY.setHours(0,0,0,0);
 const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -17,14 +17,13 @@ function patchLinks(r){if(location.protocol!=='file:'||S.preview)return;(r||docu
 
 const hdr=$('.hdr');
 addEventListener('scroll',()=>{hdr&&hdr.classList.toggle('solid',scrollY>40);const p=$('#prog');if(p)p.style.width=(scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%'},{passive:true});
-
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('in');
  e.target.querySelectorAll('[data-n]').forEach(v=>{if(v.dataset.done)return;v.dataset.done=1;const n=+v.dataset.n,t0=performance.now();
   (function tk(t){const p=Math.min(1,(t-t0)/1800),x=Math.round(n*(1-Math.pow(1-p,3)));v.textContent=n>=10000?x.toLocaleString('es-AR'):x;if(p<1)requestAnimationFrame(tk)})(t0)});
  io.unobserve(e.target)}),{threshold:.12});
 const watch=r=>(r||document).querySelectorAll('.reveal:not(.in),.chap:not(.in)').forEach(e=>io.observe(e));
 
-/* 01 · HERO vitreaux con luz */
+/* 01 · vitreaux con luz */
 const hero=$('#hero');
 if(hero){const tiles=hero.querySelector('.h-tiles');
  for(let r=0;r<8;r++)for(let c=0;c<12;c++){const i=document.createElement('i');i.style.animationDelay=(0.15+(r+c)*0.055+Math.random()*.12)+'s';tiles.appendChild(i)}
@@ -37,16 +36,16 @@ if(hero){const tiles=hero.querySelector('.h-tiles');
   requestAnimationFrame(loop)})(t0)}
 const mq=$('#mq');if(mq){const w=['Arquitectura','Historia','Patrimonio','Arte contemporáneo','Infancias','Desde 1889','San Jerónimo 166'];let h='';for(let k=0;k<2;k++)w.forEach(t=>h+=`<span>${t}</span>`);mq.innerHTML=h}
 
-/* 02-04 · capítulos: títulos animados, parallax y video en viewport */
+/* 02-04 · capítulos */
 $$('.chap h2[data-split]').forEach(h=>h.innerHTML=split(h.textContent,.1,.08));
 const chaps=$$('.chap');
 if(chaps.length){const vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target.querySelector('video');if(v)e.isIntersecting?v.play().catch(()=>{}):v.pause()}),{threshold:.3});
  chaps.forEach(c=>vio.observe(c));
- addEventListener('scroll',()=>chaps.forEach(c=>{const r=c.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;const p=(r.top+r.height/2-innerHeight/2)/innerHeight;c.querySelector('.media').style.transform=`translateY(${p*-9}%)`;}),{passive:true})}
+ addEventListener('scroll',()=>chaps.forEach(c=>{const r=c.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;const p=(r.top+r.height/2-innerHeight/2)/innerHeight;c.querySelector('.media').style.transform=`translateY(${p*-9}%)`}),{passive:true})}
 
-/* 02 · Historia */
+/* 02 · historia */
 const tly=$('#tlyears');
-if(tly){const TL=[['1873','Nace el Banco Provincial de Córdoba','El 22 de septiembre inicia sus actividades con la misión de proporcionar dinero a bajo interés y a plazos razonables para fomentar el desarrollo de la provincia.'],
+if(tly){const TL=[['1873','Nace el Banco Provincial de Córdoba','El 22 de septiembre inicia sus actividades. Su Carta Orgánica, redactada por el ministro Tomás Garzón y el legislador José Olmos, fija la misión de fomentar el desarrollo económico de la provincia.'],
  ['1880','Primeras sucursales','Se abren sucursales en Río Cuarto, Villa María, San Pedro y Bell Ville.'],
  ['1887','La decisión de construir','El Directorio, presidido por Santiago Díaz, decide construir una sede central propia y convoca al arquitecto italiano Francisco Tamburini.'],
  ['1889','Inauguración','El 17 de mayo se inaugura la casa matriz, construida en sólo dos años bajo la dirección técnica del ingeniero José Franceschi.'],
@@ -57,7 +56,7 @@ if(tly){const TL=[['1873','Nace el Banco Provincial de Córdoba','El 22 de septi
  function set(j){i=j;tly.querySelectorAll('button').forEach((b,n)=>b.classList.toggle('on',n===j));$('#tlcard').innerHTML=`<div class="tl-year sw">${TL[j][0]}</div><div class="tl-txt sw"><h3>${TL[j][1]}</h3><p>${TL[j][2]}</p></div>`}
  set(0);setInterval(()=>auto&&set((i+1)%TL.length),5000)}
 
-/* 03 · escenario de arte (muestras activas/próximas del eje arte) */
+/* 03 · escenario de arte */
 const stage=$('#stage');
 if(stage){const eje=stage.dataset.eje;const act=M.filter(m=>estado(m)!=='fin'&&(!eje||m.eje===eje)).sort((a,b)=>a.desde.localeCompare(b.desde));
  const bars=stage.querySelector('.bars'),idx=$('#idx');let k=0,play=true,tm;
@@ -77,7 +76,7 @@ if(stage){const eje=stage.dataset.eje;const act=M.filter(m=>estado(m)!=='fin'&&(
  let x0=null;stage.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});stage.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)show(k+(dx<0?1:-1));x0=null});
  show(0)}
 
-/* 04 · Infancias: diseñá tu vitreaux + trivia */
+/* 04 · infancias */
 const vg=$('#vgrid');
 if(vg){const P=['#b3262a','#d9a23a','#2f6f8f','#3f7d5a','#e9dfc4','#7a3b2e','#c56b2c','#1d2f4f'];let col=P[0],pd=false;
  const pal=$('#pal');P.forEach((p,i)=>{const b=document.createElement('button');b.style.background=p;b.setAttribute('aria-label','Color '+(i+1));if(!i)b.className='on';b.onclick=()=>{col=p;pal.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')};pal.appendChild(b)});
@@ -101,38 +100,51 @@ if(qb){const Q=[['¿En qué año se inauguró la casa matriz?',['1873','1889','1
 
 /* 05 · Explorá de otra manera */
 const XP=[
- {id:'hall',t:'Hall de Caja',k:'Imagen explorable',img:'__VITREAUX__',d:'El corazón del edificio: el antiguo hall de atención al público, coronado por el vitreaux.',
+ {t:'Hall de Caja',k:'Imagen explorable',img:'__VITREAUX__',d:'El corazón del edificio: el antiguo hall de atención al público, coronado por el vitreaux.',
   body:['Un imponente vitreaux corona el hall central de las antiguas cajas de atención al público.','Lo acompañan molduras y yesería con gran variedad de simbolismos, obra del artista Arturo Nembrini Gonzaga, en una decoración inspirada en el Palacio de Versalles.'],
   pins:[[34,40,'Escudo de Córdoba'],[62,22,'Ornamentos vegetales'],[80,62,'Paneles geométricos']]},
- {id:'acuerdos',t:'Salón de los Acuerdos',k:'Recorrido digital',img:'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=70',d:'Contenido a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true},
- {id:'boveda',t:'Descubrí la bóveda',k:'Narrativa audiovisual',img:'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1600&q=70',d:'Contenido a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true},
- {id:'numismatica',t:'Sala numismática',k:'Colección explorable',img:'https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=1600&q=70',d:'Contenido a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true},
- {id:'dinero',t:'Historia del dinero',k:'Interactivo',img:'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=1600&q=70',d:'Contenido a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true}];
+ {t:'Sala Tomás Garzón',k:'Recreación histórica',img:'assets/img/salas-recreacion/sala-tomas-garzon.jpg',d:'Los orígenes de una institución cordobesa, en una sala de época con piezas, retrato y tótem interactivo.',
+  body:['Tomás Garzón, entonces ministro, redactó junto al legislador José Olmos la Carta Orgánica del Banco Provincial de Córdoba, que inició sus actividades el 22 de septiembre de 1873.','La sala propone una recreación de época para conocer cómo empezó todo: el retrato, el escritorio y el libro de actas fundacional.'],
+  pins:[[9,22,'Retrato de Tomás Garzón'],[16,58,'Tótem interactivo'],[55,60,'Escritorio de época'],[48,82,'Libro de Actas Fundacional']],ph:true},
+ {t:'Descubrí la bóveda',k:'Narrativa audiovisual',img:'assets/img/boveda/tesoro-secreto-boveda.jpg',d:'Bienvenido al tesoro secreto: un recorrido por el camino del dinero hasta la puerta de la bóveda.',
+  body:['Un recorrido que sigue el camino del dinero: origen de la moneda, acuñación, imprenta y billetes, transporte de valores, custodia y seguridad, y llegada a las sucursales.','Al final del camino, la puerta de la bóveda.'],
+  pins:[[12,48,'El camino del dinero'],[36,38,'La bóveda en el archivo'],[70,52,'Puerta de la bóveda'],[57,82,'Recorrido en el piso']],ph:true},
+ {t:'Sala numismática',k:'Colección explorable',img:'assets/img/numismatica/sala-numismatica-numa.jpg',d:'NUMA · De la moneda al algoritmo: de la Antigüedad al siglo XXI.',
+  body:['Un recorrido en cinco etapas: Mundo antiguo, Edad Media, Edad Moderna, Época contemporánea y Siglo XX y XXI.','Vitrinas y paneles por época para seguir la evolución del dinero de la moneda al algoritmo.'],
+  pins:[[14,40,'Recorrido en 5 etapas'],[66,36,'Paneles por época'],[42,66,'Vitrinas centrales'],[30,32,'Medallas y monedas']],ph:true},
+ {t:'Centro interactivo',k:'Experiencia inmersiva',img:'assets/img/innovacion/centro-interactivo-linea-de-tiempo.jpg',d:'Una pantalla envolvente para recorrer Córdoba y el Banco de 1889 a hoy.',
+  body:['Una pantalla curva que recorre la ciudad y el Banco a través del tiempo, de 1889 a 2026.'],
+  pins:[[12,62,'1889'],[48,62,'1970'],[80,62,'2026']],ph:true},
+ {t:'Historia del dinero',k:'Interactivo',img:'',d:'Contenido e imagen a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true},
+ {t:'Salón de los Acuerdos',k:'Recorrido digital',img:'',d:'Contenido e imagen a desarrollar con el equipo del museo.',body:['Contenido sujeto a desarrollo y validación.'],pins:[],ph:true}];
 const xl=$('#xpList');
 if(xl){const view=$('#xpView');
  XP.forEach((x,i)=>{xl.insertAdjacentHTML('beforeend',`<button data-i="${i}"><span class="i">0${i+1}</span><span class="t">${x.t}</span><span class="k">${x.k} →</span></button>`);
-  view.insertAdjacentHTML('beforeend',`<div class="pic" style="background-image:url('${img(x.img)}')"></div>`)});
+  view.insertAdjacentHTML('beforeend',`<div class="pic${x.img?'':' empty'}" style="${x.img?`background-image:url('${img(x.img)}')`:''}"></div>`)});
  view.insertAdjacentHTML('beforeend','<div class="cap"><span class="lbl" id="xpK"></span><p id="xpD"></p></div>');
- const set=i=>{xl.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));view.querySelectorAll('.pic').forEach((p,j)=>p.classList.toggle('on',j===i));$('#xpK').innerHTML=XP[i].k+(XP[i].ph?'<span class="ph">A desarrollar</span>':'');$('#xpD').textContent=XP[i].d};
+ const set=i=>{xl.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));view.querySelectorAll('.pic').forEach((p,j)=>p.classList.toggle('on',j===i));$('#xpK').innerHTML=XP[i].k+(XP[i].ph?`<span class="ph">${XP[i].img?'Contenido a validar':'A desarrollar'}</span>`:'');$('#xpD').textContent=XP[i].d};
  xl.querySelectorAll('button').forEach(b=>{b.onmouseenter=()=>set(+b.dataset.i);b.onclick=()=>openX(+b.dataset.i)});set(0);
  const exo=$('#exo');
  function openX(i){const x=XP[i],u=img(x.img);
   exo.innerHTML=`<div class="bar"><span class="lbl"><b>05 · Explorá</b> &nbsp;/&nbsp; ${x.t}</span><button class="lbl" id="exoX" style="color:var(--fg)">Cerrar ✕</button></div>
-  <div class="st" id="exoSt"><div class="pan" id="exoPan" style="background-image:url('${u}')"></div><div class="lens" id="exoL" style="background-image:url('${u}')"></div>
+  <div class="st${u?'':' nolens'}" id="exoSt"><div class="pan${u?'':' empty'}" id="exoPan" style="${u?`background-image:url('${u}')`:''}"></div><div class="lens" id="exoL" style="${u?`background-image:url('${u}')`:''}"></div>
   ${x.pins.map(p=>`<div class="pin" style="left:${p[0]}%;top:${p[1]}%"><span>${p[2]}</span></div>`).join('')}
-  <div class="hint lbl">Mové el cursor para explorar · la lupa amplía el detalle</div></div>
-  <div class="body"><div><span class="lbl">${x.k}${x.ph?'<span class="ph">A desarrollar</span>':''}</span><h3 style="margin-top:24px">${x.t}</h3></div><div>${x.body.map(p=>`<p>${p}</p>`).join('')}
+  <div class="hint lbl">${u?'Mové el cursor para explorar · la lupa amplía el detalle':'Imagen pendiente'}</div></div>
+  <div class="body"><div><span class="lbl">${x.k}${x.ph?`<span class="ph">${x.img?'Contenido a validar':'A desarrollar'}</span>`:''}</span><h3 style="margin-top:24px">${x.t}</h3></div><div>${x.body.map(p=>`<p>${p}</p>`).join('')}
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px"><a class="btn acc" href="${CFG.bezzapass}" target="_blank" rel="noopener">Vivilo en persona ↗</a>${i<XP.length-1?`<button class="btn" id="exoN">Siguiente: ${XP[i+1].t} →</button>`:''}</div></div></div>`;
   exo.classList.add('on');exo.scrollTop=0;document.body.style.overflow='hidden';
   const st=$('#exoSt'),pan=$('#exoPan'),L=$('#exoL'),Z=2.6;
-  st.onpointermove=e=>{const r=st.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+  if(u)st.onpointermove=e=>{const r=st.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
    pan.style.transform=`scale(1.08) translate(${(.5-px)*5}%,${(.5-py)*5}%)`;
    L.style.left=(e.clientX-r.left)+'px';L.style.top=(e.clientY-r.top)+'px';L.style.backgroundSize=`${r.width*Z}px ${r.height*Z}px`;L.style.backgroundPosition=`${-(px*r.width*Z-120)}px ${-(py*r.height*Z-120)}px`};
   $('#exoX').onclick=closeX;const n=$('#exoN');if(n)n.onclick=()=>openX(i+1)}
  function closeX(){exo.classList.remove('on');document.body.style.overflow=''}
  addEventListener('keydown',e=>{if(e.key==='Escape')closeX()})}
 
-/* 06 · El museo hoy: agenda */
+/* 06 · espacios (imágenes resueltas) */
+$$('[data-bg]').forEach(el=>el.style.backgroundImage=`url('${img(el.dataset.bg)}')`);
+
+/* 06 · agenda */
 const ag=$('#agenda');
 if(ag){const TABS=[['Todo',m=>estado(m)!=='fin'],['Muestras',m=>m.tipo==='Muestra'&&estado(m)!=='fin'],['Actividades',m=>m.tipo==='Actividad'&&estado(m)!=='fin'],['Visitas guiadas',m=>m.tipo==='Visita guiada'&&estado(m)!=='fin'],['Archivo',m=>estado(m)==='fin']];
  const tabs=$('#tabs'),th=$('#evthumb');let cur=0;
@@ -143,7 +155,6 @@ if(ag){const TABS=[['Todo',m=>estado(m)!=='fin'],['Muestras',m=>m.tipo==='Muestr
   ag.querySelectorAll('.ev').forEach(e=>{e.onmouseenter=()=>{th.style.backgroundImage=`url('${e.dataset.img}')`;th.classList.add('on')};e.onmouseleave=()=>th.classList.remove('on')});patchLinks(ag)}
  addEventListener('pointermove',e=>{th.style.left=e.clientX+'px';th.style.top=e.clientY+'px'});draw()}
 
-/* listado: archivo */
 const ga=$('#agrid');
 if(ga){const arc=M.filter(m=>estado(m)==='fin').sort((a,b)=>b.desde.localeCompare(a.desde));let fy='Todos';
  const Y=['Todos',...new Set(arc.map(m=>m.desde.slice(0,4)))];
@@ -153,7 +164,6 @@ if(ga){const arc=M.filter(m=>estado(m)==='fin').sort((a,b)=>b.desde.localeCompar
 
 $$('[data-open]').forEach(el=>{const n=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Argentina/Cordoba'})),d=n.getDay(),h=n.getHours();const o=d>=1&&d<=5&&h>=9&&h<16;el.innerHTML=`<span class="dot ${o?'live':''}" style="${o?'':'background:#555'}"></span>${o?'Abierto ahora':'Cerrado ahora'}`});
 
-/* detalle */
 function initDetail(root){const el=root.querySelector('[data-slug]');if(!el)return;const m=M.find(x=>x.slug===el.dataset.slug);if(!m)return;const e=estado(m);
  root.querySelectorAll('.st-badge').forEach(b=>b.innerHTML=`<span class="dot ${e==='act'?'live':''}" style="${e==='fin'?'background:#555':''}"></span>${EST[e]}`);
  root.querySelectorAll('[data-if-active]').forEach(x=>x.style.display=e==='fin'?'none':'');root.querySelectorAll('[data-if-ended]').forEach(x=>x.style.display=e==='fin'?'':'none');
@@ -165,7 +175,10 @@ function initDetail(root){const el=root.querySelector('[data-slug]');if(!el)retu
 if(S.page==='detail')initDetail(document);
 if(S.preview){const pv=$('#pv');
  function route(){const mm=location.hash.match(/^#\/muestras\/([^/]+)\/?$/);
-  if(mm){const t=document.getElementById('tpl-'+mm[1]);if(!t)return;pv.innerHTML=t.innerHTML.split('__VITREAUX__').join(S.vit);pv.classList.add('on');pv.scrollTop=0;document.body.style.overflow='hidden';initDetail(pv)}
+  if(mm){const t=document.getElementById('tpl-'+mm[1]);if(!t)return;pv.innerHTML=t.innerHTML;
+   pv.querySelectorAll('[data-bg]').forEach(el=>el.style.backgroundImage=`url('${img(el.dataset.bg)}')`);
+   pv.querySelectorAll('.gal button[data-k]').forEach(b=>b.dataset.src=img(b.dataset.k));
+   pv.classList.add('on');pv.scrollTop=0;document.body.style.overflow='hidden';initDetail(pv)}
   else if(pv.classList.contains('on')){pv.classList.remove('on');pv.innerHTML='';document.body.style.overflow=''}}
  addEventListener('hashchange',route);route()}
 watch();patchLinks();
